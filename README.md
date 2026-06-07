@@ -1,7 +1,7 @@
 # One-Pedal Drive Controller — System Definition, HARA & MIL
 
 
-A **Model-Based Software Development (MBSD)** project for an automotive one-pedal drive controller, following the **ISO 26262** functional safety lifecycle. This repository covers **Stage 1** (system definition, requirements, and HARA) and **Stage 2** (safety goals, FSM design and Model-in-the-Loop validation).
+A **Model-Based Software Development (MBSD)** project for an automotive one-pedal drive controller, following the **ISO 26262** functional safety lifecycle. This repository covers system definition, requirements, and HARA, safety goals, FSM design and Model-in-the-Loop validation.
 
 > 📦 Safety mechanism implementation, Software-in-the-Loop (SIL), code generation, and Process-in-the-Loop (PIL) testing are covered in the [companion repository](#).
 
@@ -9,14 +9,14 @@ A **Model-Based Software Development (MBSD)** project for an automotive one-peda
 ## Table of Contents
 
 - [System Overview](#system-overview)
-- [Stage 1 — System Definition & Requirements](#stage-1--system-definition--requirements)
-- [Stage 2 — Hazard Analysis and Risk Assessment (HARA)](#stage-2--hazard-analysis-and-risk-assessment-hara)
+- [System Definition & Requirements](#system-definition--requirements)
+- [Hazard Analysis and Risk Assessment (HARA)](hazard-analysis-and-risk-assessment-hara)
   - [Identified Hazards](#identified-hazards)
   - [Functional Failures](#functional-failures)
   - [Operational Scenarios](#operational-scenarios)
   - [Estimation Matrix](#estimation-matrix)
-- [Stage 3 — Safety Goals & ASIL Definition](#stage-3--safety-goals--asil-definition)
-- [Stage 4 — Safety Function Definition & Model-Based Design](#stage-4--safety-function-definition--model-based-design)
+- [Safety Goals & ASIL Definition](#safety-goals--asil-definition)
+- [Safety Function Definition & Model-Based Design](#safety-function-definition--model-based-design)
   - [Simulink Project Structure](#simulink-project-structure)
   - [Controller FSM](#controller-fsm)
   - [Model-in-the-Loop (MIL) Validation](#model-in-the-loop-mil-validation)
@@ -41,7 +41,7 @@ Mathematically:
 ```
 
 
-## Stage 1 — System Definition & Requirements
+## System Definition & Requirements
 
 Defined the item boundary, functional behaviour, and all interactions with external systems according to ISO 26262.
 
@@ -74,7 +74,7 @@ Defined the item boundary, functional behaviour, and all interactions with exter
 | Requested Torque | Output | Single (N·m) | [−40, 80] |
 | Transmission State (display) | Output | Enum | {P, R, N, D, B} |
 
-## Stage 2 — Hazard Analysis and Risk Assessment (HARA)
+## Hazard Analysis and Risk Assessment (HARA)
 
 Conducted a full HARA per ISO 26262, identifying hazardous events, operational scenarios, and assigning ASIL levels to safety goals.
 
@@ -123,7 +123,7 @@ S = Severity · E = Exposure · C = Controllability
 | H5 | — | S:1 E:4 C:1 | S:3 E:4 C:2 | — | S:1 E:4 C:1 | S:3 E:3 C:2 | — | S:1 E:3 C:1 | S:2 E:3 C:2 | S:3 E:4 C:2 | **C** |
 
 
-## Stage 3 — Safety Goals & ASIL Definition
+## Safety Goals & ASIL Definition
 
 Defined safety goals from the HARA results, specifying the safe state and fault tolerance time intervals (FTTI).
 
@@ -135,7 +135,7 @@ Defined safety goals from the HARA results, specifying the safe state and fault 
 | SG4 | Periodic mechanical check of the throttle pedal | ASIL B/C | B mode disabled + warning lamp | Before driving begins |
 
 
-## Stage 4 — Safety Function Definition & Model-Based Design
+## Safety Function Definition & Model-Based Design
 
 Designed the controller as a **Finite State Machine** in MATLAB/Simulink Stateflow and validated it at **Model-in-the-Loop (MIL)** level alongside a vehicle plant model.
 
@@ -164,7 +164,7 @@ Designed the controller as a **Finite State Machine** in MATLAB/Simulink Statefl
 
 <p align="center">
   <img width="400" alt="Controller FSM top-level states: Park, Neutral, Reverse, Drive, Brake" src="https://github.com/user-attachments/assets/2d7f6156-7e96-47be-8a0e-09502f62eb43" />
-  <br><em>Controller FSM — top-level states (Park, Neutral, Reverse, Drive, Brake)</em>
+  <br><em>Controller FSM — top-level states </em>
 </p>
 
 <p align="center">
