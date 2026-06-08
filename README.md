@@ -170,7 +170,7 @@ Designed the controller as a **Finite State Machine** in MATLAB/Simulink Statefl
 </p>
 
 <p align="center">
-  <img width="900" alt="Full Simulink Stateflow chart showing all states and transitions of the one-pedal controller" src="https://github.com/user-attachments/assets/9e0f668c-eb48-4b03-a9ef-571e3ce978f0" />
+  <img width="1200" hight="800" alt="Full Simulink Stateflow chart showing all states and transitions of the one-pedal controller" src="https://github.com/user-attachments/assets/9e0f668c-eb48-4b03-a9ef-571e3ce978f0" />
   <br><em>Full Stateflow chart — all states and transition conditions</em>
 </p>
 
