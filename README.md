@@ -1,12 +1,14 @@
 # One-Pedal Drive Controller — System Definition, HARA & MIL
 
-
-A **Model-Based Software Development (MBSD)** project for an automotive one-pedal drive controller, following the **ISO 26262** functional safety lifecycle. This repository covers system definition, requirements, and HARA, safety goals, FSM design and Model-in-the-Loop validation.
-
-> 📦 Safety mechanism implementation, Software-in-the-Loop (SIL), code generation, and Process-in-the-Loop (PIL) testing are covered in the [companion repository](#).
-
-
-## Table of Contents
+This project implements a **one-pedal driving controller** for an electric compact car using MATLAB/Simulink. The controller manages vehicle longitudinal motion through a single throttle pedal, enabling both acceleration and regenerative deceleration — a key feature of modern electric vehicles.
+ 
+The development process followed a **Model-Based Software Design (MBSD)** workflow, including:
+- Item definition and Hazard Analysis & Risk Assessment (HARA)
+- Controller SW unit specification with formal interface definitions
+- Finite State Machine (FSM) design for controller logic
+- Model-in-the-Loop validation using a vehicle longitudinal dynamics plant model
+> A Simulink-based implementation of an **automotive one-pedal drive controller** for an electric vehicle, developed following automotive functional safety principles (ISO 26262 / HARA methodology).
+ 
 
 - [System Overview](#system-overview)
 - [System Definition & Requirements](#system-definition--requirements)
@@ -16,7 +18,7 @@ A **Model-Based Software Development (MBSD)** project for an automotive one-peda
   - [Operational Scenarios](#operational-scenarios)
   - [Estimation Matrix](#estimation-matrix)
 - [Safety Goals & ASIL Definition](#safety-goals--asil-definition)
-- [Safety Function Definition & Model-Based Design](#safety-function-definition--model-based-design)
+- [FSM & Model-Based Design](#FSM-model-based-design)
   - [Simulink Project Structure](#simulink-project-structure)
   - [Controller FSM](#controller-fsm)
   - [Model-in-the-Loop (MIL) Validation](#model-in-the-loop-mil-validation)
@@ -127,25 +129,24 @@ S = Severity · E = Exposure · C = Controllability
 
 Defined safety goals from the HARA results, specifying the safe state and fault tolerance time intervals (FTTI).
 
-| Safety Goal | Description | ASIL | Safe State | FTTI |
-|-------------|-------------|------|------------|------|
-| SG1 | Detect CAN disconnection, warn driver, disable B mode | ASIL C | B mode disabled + warning lamp | Before driving begins; immediately if fault occurs during driving |
-| SG2 | Detect ECU failure, warn driver, disable B mode | ASIL C | B mode disabled + warning lamp | Before driving begins; immediately if fault occurs during driving |
-| SG3 | Periodic health check of vehicle speed sensor | ASIL C | B mode disabled + warning lamp | Speed fault must be detected before braking or applying extra negative torque |
-| SG4 | Periodic mechanical check of the throttle pedal | ASIL B/C | B mode disabled + warning lamp | Before driving begins |
+| Safety Goal | ASIL | Safe State | Fault Tolerance Time Interval (FTTI) | Warning Concept | Degradation Concept |
+|---|---|---|---|---|---|
+| **SG1** — The car must stay in Neutral | C, B | Switch Automatic Transmission to Neutral | 2 seconds | Selector moves to Neutral | — |
+| **SG2** — The car must not receive Torque | C, B | Set Requested Torque to zero | 2 seconds | — | — |
+| **SG3** — Driver must be warned | C, B | Activate Safe State Alarm | 2 seconds | HMI alarm for driver | Warning lamps to alert other drivers on the road |
 
 
-## Safety Function Definition & Model-Based Design
+## FSM & Model-Based Design
 
 Designed the controller as a **Finite State Machine** in MATLAB/Simulink Stateflow and validated it at **Model-in-the-Loop (MIL)** level alongside a vehicle plant model.
 
 ### Simulink Project Structure
+| File | Description | Author |
+|------|-------------|--------|
+| `Harness.slx` | Top-level test harness; reference models + test stimuli | Provided |
+| `Plant.slx` | Vehicle longitudinal dynamics (physical model) | Provided |
+| `Controller.slx` | One-pedal drive controller logic | **Original work** |
 
-| File | Contents |
-|------|----------|
-| `Harness.slx` | Reference model wiring and test stimulus generation |
-| `Controller.slx` | FSM-based one-pedal controller |
-| `Plant.slx` | Vehicle longitudinal dynamics model |
 
 ### Controller FSM
 
@@ -161,6 +162,7 @@ Designed the controller as a **Finite State Machine** in MATLAB/Simulink Statefl
 - **Accelerate**: pedal > 1/3 — traction torque proportional to pedal position
 - **Decelerate**: pedal ≤ 1/3 — regenerative braking torque
 - **Stopped**: vehicle speed = 0 — zero torque held until pedal re-enters acceleration region, preventing unintended reverse motion
+ 
 
 <p align="center">
   <img width="400" alt="Controller FSM top-level states: Park, Neutral, Reverse, Drive, Brake" src="https://github.com/user-attachments/assets/2d7f6156-7e96-47be-8a0e-09502f62eb43" />
@@ -175,9 +177,15 @@ Designed the controller as a **Finite State Machine** in MATLAB/Simulink Statefl
 ### Model-in-the-Loop (MIL) Validation
 
 The controller and plant models were connected in the Harness and simulated together to validate the full one-pedal control logic against the expected signal behaviour. Test stimuli covered all transmission mode transitions, one-pedal torque law correctness, and the stopped-state hold condition.
+The simulation confirms:
+- Correct state transitions through P → N → D → B → N → R
+- In Brake mode: torque reaches zero when vehicle speed hits zero (Stopped sub-state activated)
+- Vehicle speed matches expected physical behavior (acceleration curves, top speed saturation)
+- Selector state displayed correctly to driver at all times
+- No unintended torque applied in Park or Neutral
 
 <p align="center">
-  <img width="500" alt="MIL simulation results from Simulink Data Inspector showing AutomaticTransmissionState, ThrottlePedalPosition, BrakePedalPressed, Vehicle_Speed_km_h and TorqueRequest_Nm over 100 seconds" src="https://github.com/user-attachments/assets/ce927ab0-ce78-4682-a941-1d7743a5199a" />
+  <img width="700" alt="MIL simulation results from Simulink Data Inspector showing AutomaticTransmissionState, ThrottlePedalPosition, BrakePedalPressed, Vehicle_Speed_km_h and TorqueRequest_Nm over 100 seconds" src="https://github.com/user-attachments/assets/ce927ab0-ce78-4682-a941-1d7743a5199a" />
   <br><em>MIL simulation results — Data Inspector view showing transmission state, pedal position, vehicle speed, and torque request over a 100-second test sequence</em>
 </p>
 
@@ -202,6 +210,6 @@ The controller and plant models were connected in the Harness and simulated toge
 
 - ISO 26262 safety lifecycle: item definition → HARA → ASIL classification → safety goals
 - Finite State Machine design and implementation in Stateflow
-- Vehicle longitudinal dynamics modelling
+- ECU Controller modelling
 - Model-in-the-Loop (MIL) simulation and verification
 - Functional safety analysis: hazard identification, SEC estimation, ASIL assignment
