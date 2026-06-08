@@ -18,7 +18,7 @@ The development process followed a **Model-Based Software Design (MBSD)** workfl
   - [Operational Scenarios](#operational-scenarios)
   - [Estimation Matrix](#estimation-matrix)
 - [Safety Goals & ASIL Definition](#safety-goals--asil-definition)
-- [FSM & Model-Based Design](#FSM-model-based-design)
+- [FSM & Model-Based Design](#FSM--Model-Based-Design)
   - [Simulink Project Structure](#simulink-project-structure)
   - [Controller FSM](#controller-fsm)
   - [Model-in-the-Loop (MIL) Validation](#model-in-the-loop-mil-validation)
